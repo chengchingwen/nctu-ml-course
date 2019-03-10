@@ -25,3 +25,5 @@ function NewtonMethod(xs, ys, n; ϵ = 1e-6)
     end
     xₙ₊₁
 end
+
+Terror(xs, ys, x) = sum(x->x^2, Φ(xs, length(x)) * x - ys)
