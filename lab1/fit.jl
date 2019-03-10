@@ -27,3 +27,13 @@ function NewtonMethod(xs, ys, n; ϵ = 1e-6)
 end
 
 Terror(xs, ys, x) = sum(x->x^2, Φ(xs, length(x)) * x - ys)
+
+function ploy(ps)
+    function (x)
+        s = 0.0
+        for (i, p) ∈ enumerate(ps)
+            s += p * x^(i-1)
+        end
+        s
+    end
+end
