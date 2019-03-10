@@ -1,0 +1,3 @@
+* NCTU ML Course 
+  homeworks written in JuliaLang
+  1. LSE & Newton's method
