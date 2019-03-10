@@ -1,4 +1,5 @@
 using ArgParse
+using Plots
 
 include("inverse.jl")
 include("fit.jl")
@@ -16,7 +17,7 @@ function parse_cmd()
         "--datafile"
             help = "data as csv-format file"
             arg_type = String
-            default = "testfile.txt"
+            default = joinpath(dirname(@__FILE__), "testfile.txt")
         "n"
             help = "number of ploynomial bases"
             arg_type = Int
@@ -28,6 +29,11 @@ end
 function fitboth(xs, ys, n; λ::Float64 = 0.0)
     lsex = LSE(xs, ys, n; λ = λ)
     newtonx = NewtonMethod(xs, ys, n)
+
+    plt1 = plot_result("LSE", lsex, xs, ys)
+    plt2 = plot_result("Newton's Method", newtonx, xs, ys)
+    @show plt = plot(plt1, plt2)
+    display(plt)
 
     display_result("LSE", lsex, xs, ys)
     println()
