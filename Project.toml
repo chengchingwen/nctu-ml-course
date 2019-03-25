@@ -1,0 +1,9 @@
+name = "nctu-ml-course"
+uuid = "bad802ae-4b9e-11e9-0e72-1ba7dc5dbcd3"
+authors = ["chengchingwen <adgjl5645@hotmail.com>"]
+version = "0.1.0"
+
+[deps]
+ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
+CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
