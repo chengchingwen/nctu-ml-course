@@ -1,4 +1,4 @@
 * NCTU ML Course 
   homeworks written in JuliaLang
   1. LSE & Newton's method
-  2. Naive Bayes Classifier on MNIST
+  2. Naive Bayes Classifier on MNIST & Beta-Binominal online learning
