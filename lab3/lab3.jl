@@ -89,7 +89,6 @@ function main()
         w = args["w"]
         n = args["n"]
         a = args["a"]
-        length(w) != n && error("length(w) not equal to n")
         lab33(n, w, a)
     else
         error("task not support")
