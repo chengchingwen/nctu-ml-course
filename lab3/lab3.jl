@@ -1,36 +1,40 @@
 using ArgParse
+using Plots
 
 include("./rdg.jl")
 include("./seq_esti.jl")
+#include("./bayes_regr.jl")
+include("./bayes_online.jl")
+include("./plot.jl")
 
 function parse_cmd()
     s = ArgParseSettings()
     @add_arg_table s begin
         "--m"
-            help = "beta param a for lab3-1.a"
+            help = "mean for lab3-1.a"
             arg_type = Float64
             default = 0.0
         "--s"
-            help = "beta param b for lab3-1.a"
+            help = "variance for lab3-1.a"
             arg_type = Float64
-            default = 0.0
+            default = 1.0
         "--n"
-            help = "beta param a for lab3-1.b"
-            arg_type = Float64
-            default = 0.0
+            help = "n basis for lab3-1.b"
+            arg_type = Int
+            default = 0
         "--a"
-            help = "beta param a for lab3-1.b"
+            help = "noies variance for lab3-1.b"
             arg_type = Float64
             default = 0.0
         "--w"
-            help = "beta param a for lab3-1.b"
+            help = "weight w for lab3-1.b"
             arg_type = Float64
             action = :store_arg
             nargs = '*'
-        "--datafile"
-            help = "sample datas for lab2-2"
-            arg_type = String
-            default = joinpath(dirname(@__FILE__), "testfile.txt")
+        "--b"
+            help = "precision b for lab3-3"
+            arg_type = Float64
+            default = 1.0
         "task"
             help = "1 for lab3-1 / 2 for lab3-2 / 3 for lab3-3"
             arg_type = Int
@@ -77,6 +81,77 @@ function lab32(m, s)
     w
 end
 
+function isconverge(MN::MvNormal, m, s, ϵ = 1e-9)
+    sum(abs2, m) == 0 && return false
+
+    mn = MN.μ
+    sn = MN.Λ
+
+    return sum(abs2, mn - m) <= ϵ && sum(abs2, sn - s) <= ϵ
+end
+
+function lab33(n, w, a, b)
+    PL = PolyLinear(n, w, a)
+
+    bl = BayesLinear(n, b, inv(a))
+
+    m = bl.prior.μ
+    s = bl.prior.Λ
+    post = bl.prior
+
+    fs = Any[]
+    c = 0
+    seenx = Float64[]
+    seeny = Float64[]
+    xs = Any[]
+    ys = Any[]
+
+    while !isconverge(post, m, s)
+        m = post.μ
+        s = post.Λ
+        c+=1
+
+        x, y = generate(PL, 1.0)
+
+        push!(seenx, x)
+        push!(seeny, y)
+
+        update!(bl, x, y)
+        post = posterior(bl)
+        pred = predictive(bl, x)
+
+        if c == 10
+            push!(fs, pred_func(bl))
+            push!(xs, copy(seenx))
+            push!(ys, copy(seeny))
+        elseif c == 50
+            push!(fs, pred_func(bl))
+            push!(xs, copy(seenx))
+            push!(ys, copy(seeny))
+        end
+
+        println("Add data point ($x, $y):\n")
+        println("\n")
+        println("Posterior mean:")
+        Base.print_array(stdout, post.μ)
+        println("\n")
+        println("Posterior variance:")
+        Base.print_array(stdout, post.Λ)
+        println("\n")
+        println("Predictive distribution ~ N($(pred.μ), $(pred.σ²))")
+        println("------------------------------------------------------")
+    end
+
+    pushfirst!(xs, copy(seenx))
+    pushfirst!(ys, copy(seeny))
+    pushfirst!(fs, pred_func(bl))
+    pushfirst!(fs, pred_func(PL))
+
+    display(plot_result(fs, xs, ys))
+
+    bl, fs, xs, ys
+end
+
 
 function main()
     args = parse_cmd()
@@ -89,7 +164,8 @@ function main()
         w = args["w"]
         n = args["n"]
         a = args["a"]
-        lab33(n, w, a)
+        b = args["b"]
+        lab33(n, w, a, b)
     else
         error("task not support")
     end

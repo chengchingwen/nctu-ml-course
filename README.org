@@ -2,3 +2,4 @@
   homeworks written in JuliaLang
   1. LSE & Newton's method
   2. Naive Bayes Classifier on MNIST & Beta-Binominal online learning
+  3. Random Data Generator & Sequential Estimator & Bayesian Linear Regression
