@@ -200,12 +200,12 @@ function stat_init(D)
     mu0
 end
 
-function lab42(;ϵ = 1e-6)
+function lab42(;ϵ = 1e-22)
     i = 0
     timages, tlabels = process_mnist(mnist_trainset())
     timages = image_preprocess(timages)
 
-    μ0 = stat_init(sort(timages, by=x->count(isequal(1), x)+rand(1:50)))
+    μ0 = stat_init(sort(timages, by=x->count(isequal(1), x)+rand(1:150)))
     bmm = BMM(10, 784, μ0 .+ 1e-6)
     zₙ = expect(bmm, timages)
 
@@ -213,7 +213,7 @@ function lab42(;ϵ = 1e-6)
         i+=1
         zₙ = zₙ₊₁
         plot_imagine(imagine(bmm), 1:10)
-        @info "Iteration: $i, Difference: $obj"
+        println("Iteration: $i, Difference: $obj")
         println("------------------------------------------------------------")
     end
 
@@ -254,3 +254,5 @@ function main()
         error("task not support")
     end
 end
+
+main()
